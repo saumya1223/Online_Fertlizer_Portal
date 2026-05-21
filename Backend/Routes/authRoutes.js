@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const crypto = require("crypto");
 
 const db = require("../db");
 const jwt = require("jsonwebtoken");
@@ -11,14 +12,58 @@ dotenv.config({ path: path.join(__dirname, "..", ".env") });
 dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
 
 const SECRET = process.env.JWT_SECRET;
+const OTP_TTL_MS = Number(process.env.OTP_TTL_MS || 5 * 60 * 1000);
+const OTP_MAX_ATTEMPTS = Number(process.env.OTP_MAX_ATTEMPTS || 5);
+const otpStore = new Map();
 
-/* ---------------------------------------
-   TEMP STORAGE
------------------------------------------ */
-global.signupOTP = null;
-global.signupEmail = null;
-global.loginOTP = null;
-global.loginEmail = null;
+function setOtpRecord(kind, email, otp) {
+  otpStore.set(`${kind}:${email.toLowerCase()}`, {
+    otp: String(otp),
+    expiresAt: Date.now() + OTP_TTL_MS,
+    attempts: 0,
+  });
+}
+
+function verifyOtpRecord(kind, email, otp) {
+  const key = `${kind}:${String(email || "").toLowerCase()}`;
+  const record = otpStore.get(key);
+
+  if (!record) return { ok: false, message: "OTP not found. Please request a new OTP." };
+  if (Date.now() > record.expiresAt) {
+    otpStore.delete(key);
+    return { ok: false, message: "OTP expired. Please request a new OTP." };
+  }
+
+  record.attempts += 1;
+  if (record.attempts > OTP_MAX_ATTEMPTS) {
+    otpStore.delete(key);
+    return { ok: false, message: "Too many failed attempts. Please request a new OTP." };
+  }
+
+  if (String(otp || "").trim() !== record.otp) {
+    return { ok: false, message: "Invalid OTP" };
+  }
+
+  otpStore.delete(key);
+  return { ok: true };
+}
+
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.pbkdf2Sync(password, salt, 100000, 64, "sha512").toString("hex");
+  return `${salt}:${hash}`;
+}
+
+function sanitizeUser(user) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    address: user.address,
+    area: user.area,
+  };
+}
 
 /* ---------------------------------------
    SEND SIGNUP OTP
@@ -32,8 +77,7 @@ router.post("/signup/send-otp", (req, res) => {
   }
 
   const otp = generateOTP();
-  global.signupOTP = otp;
-  global.signupEmail = email;
+  setOtpRecord("signup", email, otp);
 
   transporter.sendMail(
     {
@@ -59,9 +103,12 @@ router.post("/signup/send-otp", (req, res) => {
 ----------------------------------------- */
 router.post("/signup/verify", (req, res) => {
   const { name, email, phone, address, area, password, otp } = req.body;
+  if (!name || !email || !phone || !address || !area || !password || !otp) {
+    return res.status(400).json({ message: "All fields including OTP are required" });
+  }
 
-  if (otp !== global.signupOTP || email !== global.signupEmail)
-    return res.status(401).json({ message: "Invalid OTP" });
+  const otpResult = verifyOtpRecord("signup", email, otp);
+  if (!otpResult.ok) return res.status(401).json({ message: otpResult.message });
 
   const checkSql = "SELECT * FROM users WHERE email = ? OR phone = ?";
   db.query(checkSql, [email, phone], (err, result) => {
@@ -72,15 +119,13 @@ router.post("/signup/verify", (req, res) => {
 
     const insertSql =
       "INSERT INTO users (name, email, phone, address, area, password) VALUES (?, ?, ?, ?, ?, ?)";
+    const hashedPassword = hashPassword(password);
 
     db.query(
       insertSql,
-      [name, email, phone, address, area, password],
+      [name, email, phone, address, area, hashedPassword],
       (err2) => {
         if (err2) return res.status(500).json({ message: "Insert failed" });
-
-        global.signupOTP = null;
-        global.signupEmail = null;
 
         res.json({ message: "Signup completed" });
       }
@@ -100,8 +145,7 @@ router.post("/login/send-otp", (req, res) => {
   }
 
   const otp = generateOTP();
-  global.loginOTP = otp;
-  global.loginEmail = email;
+  setOtpRecord("login", email, otp);
 
   transporter.sendMail(
     {
@@ -127,9 +171,10 @@ router.post("/login/send-otp", (req, res) => {
 ----------------------------------------- */
 router.post("/login/verify", (req, res) => {
   const { email, otp } = req.body;
+  if (!email || !otp) return res.status(400).json({ message: "Email and OTP are required" });
 
-  if (otp !== global.loginOTP || email !== global.loginEmail)
-    return res.status(401).json({ message: "Invalid OTP" });
+  const otpResult = verifyOtpRecord("login", email, otp);
+  if (!otpResult.ok) return res.status(401).json({ message: otpResult.message });
 
   const sql = "SELECT * FROM users WHERE email = ?";
   db.query(sql, [email], (err, result) => {
@@ -144,13 +189,10 @@ router.post("/login/verify", (req, res) => {
       expiresIn: "1h",
     });
 
-    global.loginOTP = null;
-    global.loginEmail = null;
-
     res.json({
       message: "Login successful",
       token,
-      user,
+      user: sanitizeUser(user),
     });
   });
 });

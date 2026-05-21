@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../middleware/auth");
 
 function cleanArray(value) {
   if (!Array.isArray(value)) return [];
@@ -49,7 +50,7 @@ function fallbackPlan(payload) {
   };
 }
 
-router.post("/fertilizer-plan", async (req, res) => {
+router.post("/fertilizer-plan", auth, async (req, res) => {
   const payload = req.body || {};
   const requiredFields = ["fullName", "soilType", "cropType", "feedback", "farmLocation"];
   const missing = requiredFields.filter((field) => !String(payload[field] || "").trim());

@@ -5,9 +5,17 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
-  "keywords": ["fertilizer", "ai", "express"],
+  "keywords": [
+    "fertilizer",
+    "ai",
+    "express"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -17,5 +25,10 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.15"
+  },
+  "devDependencies": {
+    "eslint": "^9.18.0",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2"
   }
 }
