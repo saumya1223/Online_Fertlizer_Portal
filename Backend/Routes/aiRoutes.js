@@ -1,6 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth");
+const jwt = require("jsonwebtoken");
+
+function optionalAuth(req, _res, next) {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  const secret = process.env.JWT_SECRET;
+
+  if (token && secret) {
+    try {
+      req.user = jwt.verify(token, secret);
+    } catch (_err) {
+      req.user = null;
+    }
+  }
+
+  return next();
+}
 
 function cleanArray(value) {
   if (!Array.isArray(value)) return [];
@@ -24,9 +40,13 @@ function extractJsonBlock(text) {
 function fallbackPlan(payload) {
   const crop = payload.cropType || "your crop";
   const soil = payload.soilType || "your soil";
+  const responseLanguage = payload.responseLanguage || "English";
+  const isHindi = String(responseLanguage).toLowerCase() === "hindi";
 
   return {
-    feedback_analysis: `For ${crop} in ${soil}, start with balanced nutrition and monitor visible stress signals weekly.`,
+    feedback_analysis: isHindi
+      ? `${crop} की फसल और ${soil} मिट्टी के लिए संतुलित पोषण से शुरुआत करें और हर सप्ताह फसल के तनाव के संकेत देखें।`
+      : `For ${crop} in ${soil}, start with balanced nutrition and monitor visible stress signals weekly.`,
     usefulness_score: 4,
     feasibility_score: 4,
     solutions: [
@@ -47,36 +67,69 @@ function fallbackPlan(payload) {
       ],
       available_stock_match: ["Urea", "DAP", "Potash alternatives"],
     },
+    response_language: responseLanguage,
+    response_speech_lang: isHindi ? "hi-IN" : "en-IN",
   };
 }
 
-router.post("/fertilizer-plan", auth, async (req, res) => {
-  const payload = req.body || {};
-  const requiredFields = ["fullName", "soilType", "cropType", "feedback", "farmLocation"];
-  const missing = requiredFields.filter((field) => !String(payload[field] || "").trim());
+function getProviderConfig() {
+  const provider = (process.env.AI_PROVIDER || "openai").toLowerCase();
+  const isXai = provider === "xai";
+  return {
+    provider,
+    apiKey: isXai ? process.env.XAI_API_KEY : process.env.OPENAI_API_KEY,
+    model: isXai ? process.env.XAI_MODEL || "grok-2-latest" : process.env.OPENAI_MODEL || "gpt-4.1-mini",
+    endpoint: isXai ? "https://api.x.ai/v1/chat/completions" : "https://api.openai.com/v1/chat/completions",
+  };
+}
 
-  if (missing.length) {
-    return res.status(400).json({
-      error: `Missing required fields: ${missing.join(", ")}`,
-    });
+async function callChatModel(prompt, system = "You are a precise JSON-only assistant.") {
+  const cfg = getProviderConfig();
+  if (!cfg.apiKey) throw new Error("AI API key missing");
+
+  const response = await fetch(cfg.endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${cfg.apiKey}`,
+    },
+    body: JSON.stringify({
+      model: cfg.model,
+      temperature: 0.3,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: prompt },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`LLM API error ${response.status}: ${errorText}`);
   }
 
-  try {
-    const provider = (process.env.AI_PROVIDER || "openai").toLowerCase();
-    const apiKey = provider === "xai" ? process.env.XAI_API_KEY : process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return res.json(fallbackPlan(payload));
-    }
+  const completion = await response.json();
+  return completion?.choices?.[0]?.message?.content || "";
+}
 
-    const model =
-      provider === "xai"
-        ? process.env.XAI_MODEL || "grok-2-latest"
-        : process.env.OPENAI_MODEL || "gpt-4.1-mini";
-    const endpoint =
-      provider === "xai"
-        ? "https://api.x.ai/v1/chat/completions"
-        : "https://api.openai.com/v1/chat/completions";
-    const prompt = `
+async function generateFertilizerPlan(payload) {
+  const requiredFields = ["fullName", "soilType", "cropType", "feedback", "farmLocation"];
+  const missing = requiredFields.filter((field) => !String(payload[field] || "").trim());
+  if (missing.length) {
+    const err = new Error(`Missing required fields: ${missing.join(", ")}`);
+    err.status = 400;
+    throw err;
+  }
+
+  const cfg = getProviderConfig();
+  if (!cfg.apiKey) return fallbackPlan(payload);
+  const responseLanguage = payload.responseLanguage || "English";
+  const outputInstruction =
+    String(responseLanguage).toLowerCase() === "hindi"
+      ? "Write all JSON string values in simple Hindi (Devanagari script)."
+      : "Write all JSON string values in clear English.";
+
+  const prompt = `
 You are an agriculture AI advisor.
 Return ONLY valid JSON with this exact shape:
 {
@@ -99,49 +152,78 @@ Farmer input:
 - Farm Location: ${payload.farmLocation}
 
 Keep recommendations practical for Indian farming conditions and small/medium farms.
+${outputInstruction}
 `;
 
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.3,
-        messages: [
-          { role: "system", content: "You are a precise JSON-only assistant." },
-          { role: "user", content: prompt },
-        ],
-      }),
-    });
+  const rawText = await callChatModel(prompt);
+  const jsonText = extractJsonBlock(rawText);
+  if (!jsonText) throw new Error("No JSON returned from model.");
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`LLM API error ${response.status}: ${errorText}`);
-    }
+  const parsed = JSON.parse(jsonText);
+  return {
+    feedback_analysis: String(parsed.feedback_analysis || ""),
+    usefulness_score: Number(parsed.usefulness_score || 0),
+    feasibility_score: Number(parsed.feasibility_score || 0),
+    solutions: cleanArray(parsed.solutions),
+    fertilizer_plan: {
+      recommended_fertilizers: cleanArray(parsed?.fertilizer_plan?.recommended_fertilizers),
+      eco_friendly_options: cleanArray(parsed?.fertilizer_plan?.eco_friendly_options),
+      available_stock_match: cleanArray(parsed?.fertilizer_plan?.available_stock_match),
+    },
+    response_language: responseLanguage,
+    response_speech_lang: String(responseLanguage).toLowerCase() === "hindi" ? "hi-IN" : "en-IN",
+  };
+}
 
-    const completion = await response.json();
-    const rawText = completion?.choices?.[0]?.message?.content || "";
-    const jsonText = extractJsonBlock(rawText);
-    if (!jsonText) throw new Error("No JSON returned from model.");
+async function transcribeAudioWithWhisper(audioBase64, mimeType = "audio/webm") {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OPENAI_API_KEY missing for transcription");
+  if (!audioBase64) throw new Error("Audio payload missing");
 
-    const parsed = JSON.parse(jsonText);
-    const result = {
-      feedback_analysis: String(parsed.feedback_analysis || ""),
-      usefulness_score: Number(parsed.usefulness_score || 0),
-      feasibility_score: Number(parsed.feasibility_score || 0),
-      solutions: cleanArray(parsed.solutions),
-      fertilizer_plan: {
-        recommended_fertilizers: cleanArray(parsed?.fertilizer_plan?.recommended_fertilizers),
-        eco_friendly_options: cleanArray(parsed?.fertilizer_plan?.eco_friendly_options),
-        available_stock_match: cleanArray(parsed?.fertilizer_plan?.available_stock_match),
-      },
-    };
+  const audioBuffer = Buffer.from(audioBase64, "base64");
+  const form = new FormData();
+  const blob = new Blob([audioBuffer], { type: mimeType });
+  form.append("file", blob, "voice-input.webm");
+  form.append("model", "whisper-1");
+  form.append("response_format", "verbose_json");
 
+  const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}` },
+    body: form,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Whisper API error ${response.status}: ${errorText}`);
+  }
+
+  const data = await response.json();
+  return {
+    transcript: String(data?.text || "").trim(),
+    language: data?.language || "unknown",
+  };
+}
+
+async function localizeResponse(text, targetLanguage = "Hindi") {
+  const cfg = getProviderConfig();
+  if (!cfg.apiKey || !text) return text;
+
+  const prompt = `Translate the following agriculture guidance into simple ${targetLanguage} spoken by Indian farmers. Return only translated text.\n\n${text}`;
+  const translated = await callChatModel(prompt, "You are a precise translator.");
+  return String(translated || text).trim();
+}
+
+router.post("/fertilizer-plan", optionalAuth, async (req, res) => {
+  const payload = req.body || {};
+
+  try {
+    const result = await generateFertilizerPlan(payload);
     return res.json(result);
   } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ error: error.message });
+    }
     console.error("AI route error:", error.message);
     const fallback = fallbackPlan(payload);
     return res.json({
@@ -149,6 +231,42 @@ Keep recommendations practical for Indian farming conditions and small/medium fa
       warning: "Live AI unavailable. Returned fallback recommendation.",
       debug_error: error.message,
     });
+  }
+});
+
+router.post("/voice-assistant", optionalAuth, async (req, res) => {
+  const payload = req.body || {};
+
+  try {
+    const { transcript, language } = await transcribeAudioWithWhisper(payload.audioBase64, payload.mimeType);
+    const feedback = transcript || String(payload.fallbackFeedback || "").trim();
+
+    if (!feedback) {
+      return res.status(400).json({ error: "No usable speech transcript found." });
+    }
+
+    const planPayload = {
+      fullName: payload.fullName,
+      soilType: payload.soilType,
+      cropType: payload.cropType,
+      feedback,
+      farmLocation: payload.farmLocation,
+    };
+
+    const plan = await generateFertilizerPlan(planPayload);
+    const targetLanguage = payload.targetLanguage || "Hindi";
+    const localized = await localizeResponse(plan.feedback_analysis, targetLanguage);
+
+    return res.json({
+      ...plan,
+      transcript: feedback,
+      detected_language: language,
+      local_language_response: localized,
+      target_language: targetLanguage,
+    });
+  } catch (error) {
+    console.error("Voice assistant error:", error.message);
+    return res.status(500).json({ error: error.message });
   }
 });
 
