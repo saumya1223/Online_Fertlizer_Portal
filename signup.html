@@ -6,6 +6,8 @@
   <title>Sign Up - Fertilizer Portal</title>
 
   <link rel="stylesheet" href="style.css" />
+  <script src="i18n.js" defer></script>
+  <script src="config.js" defer></script>
   <script type="module" src="./signup.js"></script>
 </head>
 
@@ -15,24 +17,30 @@
 
     <div class="login-card">
 
-      <h3 class="card-title">Create an Account</h3>
+      <label for="signupLanguageSelect" data-i18n="choose_language">Language</label>
+      <select id="signupLanguageSelect" data-language-selector>
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+      </select>
 
-      <div class="input-group"><input type="text" id="fullname" placeholder="Full Name" /></div>
-      <div class="input-group"><input type="email" id="email" placeholder="Email" /></div>
-      <div class="input-group"><input type="text" id="phone" placeholder="Phone" /></div>
-      <div class="input-group"><input type="text" id="address" placeholder="Address" /></div>
-      <div class="input-group"><input type="text" id="area" placeholder="Area / City" /></div>
-      <div class="input-group"><input type="password" id="password" placeholder="Password" /></div>
+      <h3 class="card-title" data-i18n="create_account">Create an Account</h3>
+
+      <div class="input-group"><input type="text" id="fullname" data-i18n-placeholder="full_name" placeholder="Full Name" /></div>
+      <div class="input-group"><input type="email" id="email" data-i18n-placeholder="email" placeholder="Email" /></div>
+      <div class="input-group"><input type="text" id="phone" data-i18n-placeholder="phone" placeholder="Phone" /></div>
+      <div class="input-group"><input type="text" id="address" data-i18n-placeholder="address" placeholder="Address" /></div>
+      <div class="input-group"><input type="text" id="area" data-i18n-placeholder="area_city" placeholder="Area / City" /></div>
+      <div class="input-group"><input type="password" id="password" data-i18n-placeholder="password" placeholder="Password" /></div>
 
       <!-- OTP -->
       <div class="input-group" id="signupOtpGroup" style="display:none;">
-        <input type="text" id="signupOtp" maxlength="6" placeholder="Enter OTP" />
+        <input type="text" id="signupOtp" maxlength="6" data-i18n-placeholder="enter_otp" placeholder="Enter OTP" />
       </div>
 
-      <button class="btn-submit" id="signupBtn">SEND OTP</button>
-      <button class="btn-submit" id="verifySignupBtn" style="display:none;">VERIFY OTP</button>
+      <button class="btn-submit" id="signupBtn" data-i18n="send_otp">SEND OTP</button>
+      <button class="btn-submit" id="verifySignupBtn" data-i18n="verify_otp" style="display:none;">VERIFY OTP</button>
 
-      <p class="signup">Already have an account? <a href="index.html">Login</a></p>
+      <p class="signup"><span data-i18n="already_account">Already have an account?</span> <a href="index.html" data-i18n="login">Login</a></p>
 
     </div>
 

@@ -1,69 +1,65 @@
-
-console.log("LOGIN JS LOADED ✔");
+const API_BASE_URL = window.APP_CONFIG?.API_BASE_URL || "";
 
 document.addEventListener("DOMContentLoaded", () => {
-
+  const t = (key) => window.I18N?.t(key) || key;
   const loginEmail = document.getElementById("loginEmail");
   const loginOtpBox = document.getElementById("loginOtpBox");
   const loginOtpInput = document.getElementById("loginOtp");
-
   const sendLoginOtpBtn = document.getElementById("sendOtpBtn");
   const verifyLoginOtpBtn = document.getElementById("verifyOtpBtn");
 
-  // ---------------- SEND LOGIN OTP ----------------
   sendLoginOtpBtn.addEventListener("click", async () => {
-
     if (!loginEmail.value.trim()) {
-      alert("Please enter your email!");
+      alert(t("enter_email"));
       return;
     }
 
-    const res = await fetch("http://localhost:5000/api/auth/login/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: loginEmail.value })
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: loginEmail.value.trim() }),
+      });
 
-    const data = await res.json();
-    alert(data.message);
+      const data = await res.json();
+      alert(data.message || t("request_completed"));
 
-    if (data.message.includes("OTP sent")) {
-      loginOtpBox.style.display = "block";
-      sendLoginOtpBtn.style.display = "none";
-      verifyLoginOtpBtn.style.display = "block";
+      if (res.ok) {
+        loginOtpBox.style.display = "block";
+        sendLoginOtpBtn.style.display = "none";
+        verifyLoginOtpBtn.style.display = "block";
+      }
+    } catch (_error) {
+      alert(t("backend_unreachable"));
     }
   });
 
-  // ---------------- VERIFY LOGIN OTP ----------------
   verifyLoginOtpBtn.addEventListener("click", async () => {
-
     if (!loginOtpInput.value.trim()) {
-      alert("Enter OTP!");
+      alert(t("enter_otp_short"));
       return;
     }
 
-    const res = await fetch("http://localhost:5000/api/auth/login/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: loginEmail.value,
-        otp: loginOtpInput.value
-      })
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: loginEmail.value.trim(),
+          otp: loginOtpInput.value.trim(),
+        }),
+      });
 
-    const data = await res.json();
-    alert(data.message);
+      const data = await res.json();
+      alert(data.message || t("request_completed"));
 
-    if (data.message.includes("Login successful")) {
-
-      // Save user & token
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("loggedInUser", JSON.stringify(data.user));
-
-      // Go to farmer home page
-      window.location.href = "./Home_page/home.html";
+      if (res.ok && data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("loggedInUser", JSON.stringify(data.user || {}));
+        window.location.href = "./Home_page/home.html";
+      }
+    } catch (_error) {
+      alert(t("backend_unreachable"));
     }
   });
-
 });
-

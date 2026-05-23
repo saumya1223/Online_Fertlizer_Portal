@@ -9,8 +9,13 @@
     font-family: 'Poppins', sans-serif;
 }
 
+:root {
+    --brand-green: #2b8a3e;
+    --brand-cyan: #17a2b8;
+}
+
 body {
-    background-image: url("Agriculture photo HD.png");
+    background-image: url("../../Agriculture photo HD.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -44,7 +49,7 @@ body::before {
     position: fixed;
     top: 20px;
     left: 20px;
-    background-color: #2b8a3e;
+    background-color: var(--brand-green);
     color: white;
     padding: 10px 16px;
     border-radius: 8px;
@@ -75,7 +80,7 @@ body::before {
 }
 
 .form-title {
-    color: #17a2b8;
+    color: var(--brand-cyan);
     font-size: 2.4rem;
     font-weight: 700;
     margin-bottom: 10px;
@@ -136,7 +141,7 @@ textarea {
 #submitBtn {
     width: 100%;
     padding: 16px;
-    background-color: #28a745;
+    background-color: var(--brand-green);
     color: white;
     font-size: 1.1rem;
     font-weight: 700;
@@ -180,6 +185,51 @@ textarea {
     border-bottom: 1px solid #d1ecf1;
     padding-bottom: 6px;
     margin-bottom: 12px;
+}
+
+.loading-box {
+    text-align: center;
+    padding: 10px;
+}
+
+.loading-box p {
+    margin-top: 8px;
+    color: #4f5d67;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.secondary-btn {
+    border: 1px solid #17a2b8;
+    background-color: #eff9fb;
+    color: #106c7b;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.secondary-btn:hover {
+    background-color: #d9f2f7;
+}
+
+.voice-tools {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.voice-status {
+    margin-top: 10px;
+    color: #4f5d67;
+    font-size: 0.9rem;
 }
 
 /* Result lists */

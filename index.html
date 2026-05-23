@@ -1,26 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Online Farm Portal - Login</title>
-
-  <!-- Google Fonts -->
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   />
-
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- JS -->
+  <script src="i18n.js" defer></script>
+  <script src="config.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
-
-  <!-- TOP BAR -->
   <header class="header">
     <nav class="nav">
       <a href="#">HOME</a>
@@ -34,63 +27,54 @@
     </div>
   </header>
 
-  <!-- MAIN -->
   <main class="main-content-area">
-
     <div class="login-card">
       <div class="text-center">
+        <label for="languageSelect" data-i18n="choose_language">Language</label>
+        <select id="languageSelect" data-language-selector>
+          <option value="en">English</option>
+          <option value="hi">हिंदी</option>
+        </select>
         <div class="user-icon-holder">
-          <svg fill="currentColor" viewBox="0 0 24 24">
+          <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path
-              d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4
-              -4 1.79-4 4 1.79 4 4 4zm0 2
-              c-2.67 0-8 1.34-8 4v2h16v-2
-              c0-2.66-5.33-4-8-4z"
+              d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
             />
           </svg>
         </div>
-        <h3 class="card-title">Welcome, Log In</h3>
+        <h3 class="card-title" data-i18n="welcome_login">Welcome, Log In</h3>
       </div>
 
-      <!-- EMAIL -->
       <div class="input-group">
-        <input type="email" placeholder="Your Email" id="loginEmail" required />
+        <input type="email" data-i18n-placeholder="your_email" placeholder="Your Email" id="loginEmail" required />
       </div>
 
-      <!-- OTP FIELD (hidden initially) -->
-      <div class="input-group" id="loginOtpBox" style="display:none;">
-        <input type="text" placeholder="Enter OTP" id="loginOtp" maxlength="6" />
+      <div class="input-group" id="loginOtpBox" style="display: none;">
+        <input type="text" data-i18n-placeholder="enter_otp" placeholder="Enter OTP" id="loginOtp" maxlength="6" />
       </div>
 
-      <!-- BUTTONS -->
-      <button class="btn-submit" id="sendOtpBtn">SEND OTP</button>
-      <button class="btn-submit" id="verifyOtpBtn" style="display:none;">VERIFY OTP</button>
+      <button class="btn-submit" id="sendOtpBtn" data-i18n="send_otp">SEND OTP</button>
+      <button class="btn-submit" id="verifyOtpBtn" data-i18n="verify_otp" style="display: none;">VERIFY OTP</button>
 
-      <p class="muted">Or</p>
+      <p class="muted" data-i18n="or">Or</p>
 
-      <button class="btn-google">
-        <img src="https://developers.google.com/identity/images/g-logo.png" />
-        Continue with Google
+      <button class="btn-google" type="button">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" />
+        <span data-i18n="continue_google">Continue with Google</span>
       </button>
 
       <p class="signup">
-        Don’t have an account?
-        <a href="signup.html">Sign up</a>
+        <span data-i18n="no_account">Don't have an account?</span>
+        <a href="signup.html" data-i18n="sign_up">Sign up</a>
       </p>
     </div>
 
-    <!-- RIGHT TEXT -->
     <div class="portal-description">
-      <h1>Online Fertilizer Portal</h1>
-      <p>
-        Welcome to our Online Fertilizer Portal — your one-stop solution 
-        for agricultural support, fertilizers and smart farming help.
+      <h1 data-i18n="online_portal">Online Fertilizer Portal</h1>
+      <p data-i18n="portal_tagline">
+        Welcome to our Online Fertilizer Portal - your one-stop solution for agricultural support, fertilizers, and smart farming help.
       </p>
     </div>
-
   </main>
 </body>
 </html>
-
-
-login page wala
