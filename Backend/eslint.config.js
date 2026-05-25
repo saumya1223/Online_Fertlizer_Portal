@@ -1,22 +1,18 @@
-const globals = require("globals");
-
 module.exports = [
   {
-    ignores: ["node_modules/**"],
-  },
-  {
-    files: ["**/*.js"],
     languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "script",
+      ecmaVersion: 2021,
+      sourceType: "commonjs",
       globals: {
-        ...globals.node,
+        console: "readonly",
+        process: "readonly",
+        module: "readonly",
+        require: "readonly",
+        __dirname: "readonly",
       },
     },
     rules: {
-      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "no-undef": "error",
+      "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     },
   },
 ];
-

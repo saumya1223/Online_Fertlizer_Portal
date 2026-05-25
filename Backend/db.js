@@ -9,12 +9,16 @@ const db = mysql.createConnection({
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "farming_app",
+  database: process.env.DB_NAME || "fertilizer_portal",
+  port: Number(process.env.DB_PORT || 3306),
 });
 
 db.connect((err) => {
-  if (err) console.log("DB Error:", err.message);
-  else console.log("MySQL Connected");
+  if (err) {
+    console.error("MySQL connection error:", err.message);
+    return;
+  }
+  console.log("MySQL connected");
 });
 
 module.exports = db;

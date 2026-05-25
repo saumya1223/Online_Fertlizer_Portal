@@ -1,30 +1,26 @@
 const express = require("express");
 const cors = require("cors");
 const routes = require("./routes");
-const authRoutes = require("./Routes/authRoutes");
-const aiRoutes = require("./Routes/aiRoutes");
+const authRoutes = require("./routes/authRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 const path = require("path");
 const dotenv = require("dotenv");
 
 dotenv.config({ path: path.join(__dirname, ".env") });
 dotenv.config({ path: path.join(__dirname, "..", ".env") });
-require("./db");  // connects to MySQL
+require("./db");
 
 const app = express();
 
 app.use(
   cors({
-    origin: ["http://127.0.0.1:5500", "http://localhost:5500"],   // Live Server
+    origin: ["http://127.0.0.1:5500", "http://localhost:5500"],
     methods: ["GET", "POST"],
   })
 );
 
 app.use(express.json());
-
-// Default API test
 app.use("/api", routes);
-
-// Authentication Routes (OTP, Login, Signup)
 app.use("/api/auth", authRoutes);
 app.use("/api/ai", aiRoutes);
 
