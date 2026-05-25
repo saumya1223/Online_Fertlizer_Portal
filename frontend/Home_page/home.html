@@ -1,76 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fertilizer Portal - Dashboard</title>
-  <link rel="stylesheet" href="home.css" />
-  <script src="../i18n.js" defer></script>
-  <script src="home.js" defer></script>
-</head>
-<body>
-  <nav class="navbar">
-    <div class="nav-left">
-      <button class="menu-btn" id="openSidebar">&#9776;</button>
-      <h2 class="nav-logo">Fertilizer Portal</h2>
-    </div>
-
-    <div class="nav-right">
-      <label for="homeLanguageSelect" data-i18n="choose_language">Language</label>
-      <select id="homeLanguageSelect" data-language-selector>
-        <option value="en">English</option>
-        <option value="hi">हिंदी</option>
-      </select>
-      <button id="logoutBtn" class="logout-btn" data-i18n="logout">Logout</button>
-    </div>
-  </nav>
-
-  <aside id="sidebar" class="sidebar">
-    <button class="close-btn" id="closeSidebar">&#10005;</button>
-    <ul class="sidebar-links">
-      <li onclick="location.href='home.html'" data-i18n="home">Home</li>
-      <li onclick="location.href='features/soil-analysis.html'" data-i18n="soil_analysis">Soil Analysis</li>
-      <li onclick="location.href='features/fertilizer-guide.html'" data-i18n="fertilizer_guide">Fertilizer Guide</li>
-      <li onclick="location.href='features/weather.html'" data-i18n="weather_advisor">Weather Advisor</li>
-      <li onclick="location.href='features/Info_soil.html'" data-i18n="soil_info">Soil Info</li>
-      <li onclick="location.href='features/community.html'" data-i18n="community">Community</li>
-    </ul>
-  </aside>
-
-  <main class="home-main">
-    <h1 id="welcomeText" class="greeting-text"></h1>
-    <p class="sub-greeting" data-i18n="portal_tagline">
-      Welcome to our Online Fertilizer Portal - your one-stop solution for agricultural support, fertilizers, and smart farming help.
-    </p>
-  </main>
-
-  <section class="features-section" id="features">
-    <h2 class="features-title" data-i18n="smart_features">Our Smart Farming Features</h2>
-    <div class="features-container">
-      <div class="feature-box fade-up" onclick="location.href='features/soil-analysis.html'">
-        <img src="soil_en.png" class="feature-icon" />
-        <h3 data-i18n="soil_enrichment">Soil Enrichment</h3>
-        <p data-i18n="soil_enrichment_desc">Improve soil nutrients and boost crop yield.</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fertilizer Portal - Dashboard</title>
+    <link rel="stylesheet" href="home.css" />
+    <script src="../i18n.js" defer></script>
+    <script src="home.js" defer></script>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-left">
+        <button class="menu-btn" id="openSidebar">&#9776;</button>
+        <h2 class="nav-logo">Fertilizer Portal</h2>
       </div>
 
-      <div class="feature-box fade-up" onclick="location.href='features/fertilizer-guide.html'">
-        <img src="fertilizer.png" class="feature-icon" />
-        <h3 data-i18n="fertilizer_guide">Fertilizer Guide</h3>
-        <p data-i18n="fertilizer_guide_desc">Get crop-based fertilizer recommendations.</p>
+      <div class="nav-right">
+        <label for="homeLanguageSelect" data-i18n="choose_language">Language</label>
+        <select id="homeLanguageSelect" data-language-selector>
+          <option value="en">English</option>
+          <option value="hi">हिंदी</option>
+        </select>
+        <button id="logoutBtn" class="logout-btn" data-i18n="logout">Logout</button>
+      </div>
+    </nav>
+
+    <aside id="sidebar" class="sidebar">
+      <button class="close-btn" id="closeSidebar">&#10005;</button>
+      <ul class="sidebar-links">
+        <li onclick="location.href = 'home.html'" data-i18n="home">Home</li>
+        <li onclick="location.href = 'features/soil-analysis.html'" data-i18n="soil_analysis">
+          Soil Analysis
+        </li>
+        <li onclick="location.href = 'features/fertilizer-guide.html'" data-i18n="fertilizer_guide">
+          Fertilizer Guide
+        </li>
+        <li onclick="location.href = 'features/weather.html'" data-i18n="weather_advisor">
+          Weather Advisor
+        </li>
+        <li onclick="location.href = 'features/Info_soil.html'" data-i18n="soil_info">Soil Info</li>
+        <li onclick="location.href = 'features/community.html'" data-i18n="community">Community</li>
+      </ul>
+    </aside>
+
+    <main class="home-main">
+      <h1 id="welcomeText" class="greeting-text"></h1>
+      <p class="sub-greeting" data-i18n="portal_tagline">
+        Welcome to our Online Fertilizer Portal - your one-stop solution for agricultural support,
+        fertilizers, and smart farming help.
+      </p>
+    </main>
+
+    <section class="features-section" id="features">
+      <h2 class="features-title" data-i18n="smart_features">Our Smart Farming Features</h2>
+      <div class="features-container">
+        <div class="feature-box fade-up" onclick="location.href = 'features/soil-analysis.html'">
+          <img src="soil_en.png" class="feature-icon" />
+          <h3 data-i18n="soil_enrichment">Soil Enrichment</h3>
+          <p data-i18n="soil_enrichment_desc">Improve soil nutrients and boost crop yield.</p>
+        </div>
+
+        <div class="feature-box fade-up" onclick="location.href = 'features/fertilizer-guide.html'">
+          <img src="fertilizer.png" class="feature-icon" />
+          <h3 data-i18n="fertilizer_guide">Fertilizer Guide</h3>
+          <p data-i18n="fertilizer_guide_desc">Get crop-based fertilizer recommendations.</p>
+        </div>
+
+        <div class="feature-box fade-up" onclick="location.href = 'features/community.html'">
+          <img src="community.png" class="feature-icon" />
+          <h3 data-i18n="community">Community</h3>
+          <p data-i18n="community_desc">Connect and learn with other farmers.</p>
+        </div>
       </div>
 
-      <div class="feature-box fade-up" onclick="location.href='features/community.html'">
-        <img src="community.png" class="feature-icon" />
-        <h3 data-i18n="community">Community</h3>
-        <p data-i18n="community_desc">Connect and learn with other farmers.</p>
+      <div class="feature-box" onclick="location.href = 'ai_form/form.html'">
+        <img src="fertilizer.png" alt="AI Fertilizer Advisor" class="feature-icon" />
+        <h3 data-i18n="ai_advisor">AI Fertilizer Advisor</h3>
+        <p data-i18n="ai_advisor_desc">Get smart, personalized fertilizer planning using AI.</p>
       </div>
-    </div>
-
-    <div class="feature-box" onclick="location.href='ai_form/form.html'">
-      <img src="fertilizer.png" alt="AI Fertilizer Advisor" class="feature-icon" />
-      <h3 data-i18n="ai_advisor">AI Fertilizer Advisor</h3>
-      <p data-i18n="ai_advisor_desc">Get smart, personalized fertilizer planning using AI.</p>
-    </div>
-  </section>
-</body>
+    </section>
+  </body>
 </html>

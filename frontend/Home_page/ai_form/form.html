@@ -1,87 +1,118 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Farmer Feedback Form</title>
-  <link rel="stylesheet" href="form.css" />
-  <script src="../../i18n.js" defer></script>
-</head>
-<body>
-  <a href="../home.html" class="back-btn" aria-label="Back to home">Back to Home</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farmer Feedback Form</title>
+    <link rel="stylesheet" href="form.css" />
+    <script src="../../i18n.js" defer></script>
+  </head>
+  <body>
+    <a href="../home.html" class="back-btn" aria-label="Back to home">Back to Home</a>
 
-  <div class="form-container">
-    <h1 class="form-title" data-i18n="farmer_form_title">Farmer Feedback Form</h1>
-    <p class="form-description" data-i18n="farmer_form_desc">
-      Provide your farm details and feedback to receive a personalized fertilizer plan powered by AI.
-    </p>
+    <div class="form-container">
+      <h1 class="form-title" data-i18n="farmer_form_title">Farmer Feedback Form</h1>
+      <p class="form-description" data-i18n="farmer_form_desc">
+        Provide your farm details and feedback to receive a personalized fertilizer plan powered by
+        AI.
+      </p>
 
-    <div class="form-element">
-      <label for="formLanguageSelect" data-i18n="choose_language">Language</label>
-      <select id="formLanguageSelect" data-language-selector>
-        <option value="en">English</option>
-        <option value="hi">हिंदी</option>
-      </select>
+      <div class="form-element">
+        <label for="formLanguageSelect" data-i18n="choose_language">Language</label>
+        <select id="formLanguageSelect" data-language-selector>
+          <option value="en">English</option>
+          <option value="hi">हिंदी</option>
+        </select>
+      </div>
+
+      <form id="dynamicForm">
+        <div class="form-element">
+          <label for="fullName" data-i18n="full_name">Full Name</label>
+          <input
+            type="text"
+            id="fullName"
+            name="Full Name"
+            placeholder="Please enter your name"
+            required
+          />
+        </div>
+
+        <div class="form-element">
+          <label for="soilType" data-i18n="soil_type">Soil Type</label>
+          <select id="soilType" name="Soil Type" required>
+            <option value="">Select your soil type</option>
+            <option value="Sandy Loam">Sandy Loam</option>
+            <option value="Clay Soil">Clay Soil</option>
+            <option value="Loamy Soil">Loamy Soil</option>
+            <option value="Silt Soil">Silt Soil</option>
+            <option value="Chalky Soil">Chalky Soil</option>
+          </select>
+        </div>
+
+        <div class="form-element">
+          <label for="cropType" data-i18n="crop_type">Crop Type</label>
+          <input
+            type="text"
+            id="cropType"
+            name="Crop Type"
+            placeholder="e.g., Wheat, Rice, Corn"
+            required
+          />
+        </div>
+
+        <div class="form-element">
+          <label for="feedback" data-i18n="farmer_feedback">Farmer Feedback</label>
+          <textarea
+            id="feedback"
+            name="Feedback"
+            data-i18n-placeholder="feedback_placeholder"
+            placeholder="Describe crop health, issues, observations... (optional if using voice)"
+          ></textarea>
+          <div class="voice-tools">
+            <button id="micBtn" class="secondary-btn" data-i18n="start_voice" type="button">
+              Start Voice Input
+            </button>
+            <button
+              id="speakBtn"
+              class="secondary-btn"
+              data-i18n="speak_last"
+              type="button"
+              disabled
+            >
+              Speak Last AI Result
+            </button>
+          </div>
+          <p id="voiceStatus" class="voice-status" data-i18n="voice_tip">
+            Tip: You can speak in Hindi or English.
+          </p>
+        </div>
+
+        <div class="form-element">
+          <label for="responseLanguage" data-i18n="response_language">AI Response Language</label>
+          <select id="responseLanguage" name="Response Language">
+            <option value="Hindi">Hindi</option>
+            <option value="English">English</option>
+          </select>
+        </div>
+
+        <div class="form-element">
+          <label for="farmLocation" data-i18n="farm_location">Farm Location</label>
+          <input
+            type="text"
+            id="farmLocation"
+            name="Farm Location"
+            placeholder="e.g., District, State"
+            required
+          />
+        </div>
+
+        <button type="submit" id="submitBtn" data-i18n="submit_feedback">Submit Feedback</button>
+      </form>
     </div>
 
-    <form id="dynamicForm">
-      <div class="form-element">
-        <label for="fullName" data-i18n="full_name">Full Name</label>
-        <input type="text" id="fullName" name="Full Name" placeholder="Please enter your name" required />
-      </div>
+    <div id="resultsDisplay" class="results-display"></div>
 
-      <div class="form-element">
-        <label for="soilType" data-i18n="soil_type">Soil Type</label>
-        <select id="soilType" name="Soil Type" required>
-          <option value="">Select your soil type</option>
-          <option value="Sandy Loam">Sandy Loam</option>
-          <option value="Clay Soil">Clay Soil</option>
-          <option value="Loamy Soil">Loamy Soil</option>
-          <option value="Silt Soil">Silt Soil</option>
-          <option value="Chalky Soil">Chalky Soil</option>
-        </select>
-      </div>
-
-      <div class="form-element">
-        <label for="cropType" data-i18n="crop_type">Crop Type</label>
-        <input type="text" id="cropType" name="Crop Type" placeholder="e.g., Wheat, Rice, Corn" required />
-      </div>
-
-      <div class="form-element">
-        <label for="feedback" data-i18n="farmer_feedback">Farmer Feedback</label>
-        <textarea
-          id="feedback"
-          name="Feedback"
-          data-i18n-placeholder="feedback_placeholder"
-          placeholder="Describe crop health, issues, observations... (optional if using voice)"
-        ></textarea>
-        <div class="voice-tools">
-          <button id="micBtn" class="secondary-btn" data-i18n="start_voice" type="button">Start Voice Input</button>
-          <button id="speakBtn" class="secondary-btn" data-i18n="speak_last" type="button" disabled>Speak Last AI Result</button>
-        </div>
-        <p id="voiceStatus" class="voice-status" data-i18n="voice_tip">Tip: You can speak in Hindi or English.</p>
-      </div>
-
-      <div class="form-element">
-        <label for="responseLanguage" data-i18n="response_language">AI Response Language</label>
-        <select id="responseLanguage" name="Response Language">
-          <option value="Hindi">Hindi</option>
-          <option value="English">English</option>
-        </select>
-      </div>
-
-      <div class="form-element">
-        <label for="farmLocation" data-i18n="farm_location">Farm Location</label>
-        <input type="text" id="farmLocation" name="Farm Location" placeholder="e.g., District, State" required />
-      </div>
-
-      <button type="submit" id="submitBtn" data-i18n="submit_feedback">Submit Feedback</button>
-    </form>
-  </div>
-
-  <div id="resultsDisplay" class="results-display"></div>
-
-  <script src="../../config.js" defer></script>
-  <script src="form.js" defer></script>
-</body>
+    <script src="../../config.js" defer></script>
+    <script src="form.js" defer></script>
+  </body>
 </html>

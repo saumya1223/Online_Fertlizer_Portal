@@ -39,4 +39,3 @@ jobs:
       - name: Check formatting backend
         run: npm run format:check
         working-directory: Backend
-

@@ -3,6 +3,7 @@
 ## Development Setup
 
 ### Frontend + Shared Tooling
+
 ```bash
 npm install
 npm run lint
@@ -10,6 +11,7 @@ npm run format:check
 ```
 
 ### Backend
+
 ```bash
 cd Backend
 npm install
@@ -26,5 +28,6 @@ npm run start
 GitHub Actions workflow: `.github/workflows/ci.yml`
 
 Runs on push/PR to `main` and `dev`:
+
 - lint (root + backend)
 - format check (root + backend)

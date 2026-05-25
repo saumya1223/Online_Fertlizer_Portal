@@ -27,7 +27,9 @@ function queryAsync(sql, params = []) {
 }
 
 function normalizeEmail(email) {
-  return String(email || "").trim().toLowerCase();
+  return String(email || "")
+    .trim()
+    .toLowerCase();
 }
 
 function setOtpRecordInMemory(kind, email, otp) {
@@ -105,25 +107,35 @@ async function verifyOtpRecord(kind, email, otp) {
     const record = rows[0];
 
     if (Date.now() > Number(record.expires_at)) {
-      await queryAsync(`DELETE FROM ${OTP_TABLE} WHERE kind = ? AND email = ?`, [kind, normalizedEmail]);
+      await queryAsync(`DELETE FROM ${OTP_TABLE} WHERE kind = ? AND email = ?`, [
+        kind,
+        normalizedEmail,
+      ]);
       return { ok: false, message: "OTP expired. Please request a new OTP." };
     }
 
     const nextAttempts = Number(record.attempts) + 1;
     if (nextAttempts > OTP_MAX_ATTEMPTS) {
-      await queryAsync(`DELETE FROM ${OTP_TABLE} WHERE kind = ? AND email = ?`, [kind, normalizedEmail]);
+      await queryAsync(`DELETE FROM ${OTP_TABLE} WHERE kind = ? AND email = ?`, [
+        kind,
+        normalizedEmail,
+      ]);
       return { ok: false, message: "Too many failed attempts. Please request a new OTP." };
     }
 
     if (String(otp || "").trim() !== String(record.otp)) {
-      await queryAsync(
-        `UPDATE ${OTP_TABLE} SET attempts = ? WHERE kind = ? AND email = ?`,
-        [nextAttempts, kind, normalizedEmail]
-      );
+      await queryAsync(`UPDATE ${OTP_TABLE} SET attempts = ? WHERE kind = ? AND email = ?`, [
+        nextAttempts,
+        kind,
+        normalizedEmail,
+      ]);
       return { ok: false, message: "Invalid OTP" };
     }
 
-    await queryAsync(`DELETE FROM ${OTP_TABLE} WHERE kind = ? AND email = ?`, [kind, normalizedEmail]);
+    await queryAsync(`DELETE FROM ${OTP_TABLE} WHERE kind = ? AND email = ?`, [
+      kind,
+      normalizedEmail,
+    ]);
     return { ok: true };
   } catch (_error) {
     return verifyOtpRecordInMemory(kind, normalizedEmail, otp);
@@ -204,15 +216,11 @@ router.post("/signup/verify", async (req, res) => {
       "INSERT INTO users (name, email, phone, address, area, password) VALUES (?, ?, ?, ?, ?, ?)";
     const hashedPassword = hashPassword(password);
 
-    db.query(
-      insertSql,
-      [name, email, phone, address, area, hashedPassword],
-      (err2) => {
-        if (err2) return res.status(500).json({ message: "Insert failed" });
+    db.query(insertSql, [name, email, phone, address, area, hashedPassword], (err2) => {
+      if (err2) return res.status(500).json({ message: "Insert failed" });
 
-        res.json({ message: "Signup completed" });
-      }
-    );
+      res.json({ message: "Signup completed" });
+    });
   });
 });
 
@@ -264,8 +272,7 @@ router.post("/login/verify", async (req, res) => {
   db.query(sql, [email], (err, result) => {
     if (err) return res.status(500).json({ message: "Database Error" });
 
-    if (result.length === 0)
-      return res.status(404).json({ message: "User not found" });
+    if (result.length === 0) return res.status(404).json({ message: "User not found" });
 
     const user = result[0];
 

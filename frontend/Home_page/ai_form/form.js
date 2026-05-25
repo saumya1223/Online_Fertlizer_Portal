@@ -204,7 +204,8 @@ document.getElementById("dynamicForm").addEventListener("submit", async (event) 
   const submitBtn = document.getElementById("submitBtn");
 
   const feedbackFieldText = form.elements["Feedback"].value.trim();
-  const feedbackText = feedbackFieldText || `${voiceFinalTranscript} ${voiceInterimTranscript}`.trim();
+  const feedbackText =
+    feedbackFieldText || `${voiceFinalTranscript} ${voiceInterimTranscript}`.trim();
   if (!feedbackText) {
     const msg = t("submit_need_feedback");
     setVoiceStatus(msg);

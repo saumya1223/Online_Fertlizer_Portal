@@ -78,8 +78,12 @@ function getProviderConfig() {
   return {
     provider,
     apiKey: isXai ? process.env.XAI_API_KEY : process.env.OPENAI_API_KEY,
-    model: isXai ? process.env.XAI_MODEL || "grok-2-latest" : process.env.OPENAI_MODEL || "gpt-4.1-mini",
-    endpoint: isXai ? "https://api.x.ai/v1/chat/completions" : "https://api.openai.com/v1/chat/completions",
+    model: isXai
+      ? process.env.XAI_MODEL || "grok-2-latest"
+      : process.env.OPENAI_MODEL || "gpt-4.1-mini",
+    endpoint: isXai
+      ? "https://api.x.ai/v1/chat/completions"
+      : "https://api.openai.com/v1/chat/completions",
   };
 }
 
@@ -238,7 +242,10 @@ router.post("/voice-assistant", optionalAuth, async (req, res) => {
   const payload = req.body || {};
 
   try {
-    const { transcript, language } = await transcribeAudioWithWhisper(payload.audioBase64, payload.mimeType);
+    const { transcript, language } = await transcribeAudioWithWhisper(
+      payload.audioBase64,
+      payload.mimeType
+    );
     const feedback = transcript || String(payload.fallbackFeedback || "").trim();
 
     if (!feedback) {

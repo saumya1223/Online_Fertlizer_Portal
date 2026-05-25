@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap");
 
 /* ------------------ GLOBAL ------------------ */
 body {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background-image: url("../field.png");
   background-size: cover;
   background-position: center;
@@ -34,7 +34,7 @@ body::before {
 
 .nav-logo {
   font-size: 1.7rem;
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-weight: 700;
 }
 
@@ -45,9 +45,11 @@ body::before {
   color: white;
   cursor: pointer;
   margin-right: 15px;
-  transition: .3s;
+  transition: 0.3s;
 }
-.menu-btn:hover { transform: scale(1.2); }
+.menu-btn:hover {
+  transform: scale(1.2);
+}
 
 /* ------------------------------ SIDEBAR ------------------------------ */
 .sidebar {
@@ -88,7 +90,7 @@ body::before {
   font-size: 1.1rem;
   color: white;
   cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   transition: 0.3s;
 }
 .sidebar-links li:hover {
@@ -103,9 +105,11 @@ body::before {
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: .3s;
+  transition: 0.3s;
 }
-.logout-btn:hover { background: #267636; }
+.logout-btn:hover {
+  background: #267636;
+}
 
 /* ---------------------- GREETING SECTION ---------------------- */
 .home-main {
@@ -117,20 +121,26 @@ body::before {
 
 .greeting-text {
   font-size: 3.4rem;
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-weight: 700;
   animation: fadeUp 1.4s ease;
 }
 
 .sub-greeting {
   font-size: 1.2rem;
-  opacity: .9;
+  opacity: 0.9;
   animation: fadeUp 2s ease;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ---------------------- FEATURES ---------------------- */
@@ -147,7 +157,7 @@ body::before {
 
 .features-title {
   font-size: 2.7rem;
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   color: #2b8a3e;
   margin-bottom: 55px;
 }
@@ -164,8 +174,8 @@ body::before {
   border-radius: 18px;
   min-height: 320px;
   cursor: pointer;
-  transition: .35s;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  transition: 0.35s;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
 }
 
 .feature-box:hover {
@@ -176,7 +186,7 @@ body::before {
 .feature-icon {
   width: 85px;
   margin-bottom: 18px;
-  transition: .3s;
+  transition: 0.3s;
 }
 
 .feature-box:hover .feature-icon {

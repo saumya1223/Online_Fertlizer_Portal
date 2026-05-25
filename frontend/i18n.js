@@ -39,11 +39,13 @@
       ai_advisor: "AI Fertilizer Advisor",
       ai_advisor_desc: "Get smart, personalized fertilizer planning using AI.",
       farmer_form_title: "Farmer Feedback Form",
-      farmer_form_desc: "Provide your farm details and feedback to receive a personalized fertilizer plan powered by AI.",
+      farmer_form_desc:
+        "Provide your farm details and feedback to receive a personalized fertilizer plan powered by AI.",
       soil_type: "Soil Type",
       crop_type: "Crop Type",
       farmer_feedback: "Farmer Feedback",
-      feedback_placeholder: "Describe crop health, issues, observations... (optional if using voice)",
+      feedback_placeholder:
+        "Describe crop health, issues, observations... (optional if using voice)",
       start_voice: "Start Voice Input",
       speak_last: "Speak Last AI Result",
       voice_tip: "Tip: You can speak in Hindi or English.",
@@ -59,7 +61,8 @@
       fill_required_signup: "Please fill name, email, and phone.",
       password_rule: "Password must be at least 8 characters.",
       submit_need_feedback: "Please type feedback or use voice input before submitting.",
-      mic_not_supported: "Speech recognition is not supported. Try Chrome/Edge on desktop or Android.",
+      mic_not_supported:
+        "Speech recognition is not supported. Try Chrome/Edge on desktop or Android.",
       mic_started: "Microphone started. Speak now...",
       listening: "Listening... speak in Hindi or English.",
       no_speech: "Voice input stopped, but no speech was recognized. Please try again.",

@@ -11,7 +11,11 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
-  "keywords": ["fertilizer", "ai", "express"],
+  "keywords": [
+    "fertilizer",
+    "ai",
+    "express"
+  ],
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",

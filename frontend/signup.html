@@ -1,50 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up - Fertilizer Portal</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - Fertilizer Portal</title>
 
-  <link rel="stylesheet" href="style.css" />
-  <script src="i18n.js" defer></script>
-  <script src="config.js" defer></script>
-  <script type="module" src="./signup.js"></script>
-</head>
+    <link rel="stylesheet" href="style.css" />
+    <script src="i18n.js" defer></script>
+    <script src="config.js" defer></script>
+    <script type="module" src="./signup.js"></script>
+  </head>
 
-<body>
+  <body>
+    <main class="main-content-area">
+      <div class="login-card">
+        <label for="signupLanguageSelect" data-i18n="choose_language">Language</label>
+        <select id="signupLanguageSelect" data-language-selector>
+          <option value="en">English</option>
+          <option value="hi">हिंदी</option>
+        </select>
 
-  <main class="main-content-area">
+        <h3 class="card-title" data-i18n="create_account">Create an Account</h3>
 
-    <div class="login-card">
+        <div class="input-group">
+          <input
+            type="text"
+            id="fullname"
+            data-i18n-placeholder="full_name"
+            placeholder="Full Name"
+          />
+        </div>
+        <div class="input-group">
+          <input type="email" id="email" data-i18n-placeholder="email" placeholder="Email" />
+        </div>
+        <div class="input-group">
+          <input type="text" id="phone" data-i18n-placeholder="phone" placeholder="Phone" />
+        </div>
+        <div class="input-group">
+          <input type="text" id="address" data-i18n-placeholder="address" placeholder="Address" />
+        </div>
+        <div class="input-group">
+          <input
+            type="text"
+            id="area"
+            data-i18n-placeholder="area_city"
+            placeholder="Area / City"
+          />
+        </div>
+        <div class="input-group">
+          <input
+            type="password"
+            id="password"
+            data-i18n-placeholder="password"
+            placeholder="Password"
+          />
+        </div>
 
-      <label for="signupLanguageSelect" data-i18n="choose_language">Language</label>
-      <select id="signupLanguageSelect" data-language-selector>
-        <option value="en">English</option>
-        <option value="hi">हिंदी</option>
-      </select>
+        <!-- OTP -->
+        <div class="input-group" id="signupOtpGroup" style="display: none">
+          <input
+            type="text"
+            id="signupOtp"
+            maxlength="6"
+            data-i18n-placeholder="enter_otp"
+            placeholder="Enter OTP"
+          />
+        </div>
 
-      <h3 class="card-title" data-i18n="create_account">Create an Account</h3>
+        <button class="btn-submit" id="signupBtn" data-i18n="send_otp">SEND OTP</button>
+        <button
+          class="btn-submit"
+          id="verifySignupBtn"
+          data-i18n="verify_otp"
+          style="display: none"
+        >
+          VERIFY OTP
+        </button>
 
-      <div class="input-group"><input type="text" id="fullname" data-i18n-placeholder="full_name" placeholder="Full Name" /></div>
-      <div class="input-group"><input type="email" id="email" data-i18n-placeholder="email" placeholder="Email" /></div>
-      <div class="input-group"><input type="text" id="phone" data-i18n-placeholder="phone" placeholder="Phone" /></div>
-      <div class="input-group"><input type="text" id="address" data-i18n-placeholder="address" placeholder="Address" /></div>
-      <div class="input-group"><input type="text" id="area" data-i18n-placeholder="area_city" placeholder="Area / City" /></div>
-      <div class="input-group"><input type="password" id="password" data-i18n-placeholder="password" placeholder="Password" /></div>
-
-      <!-- OTP -->
-      <div class="input-group" id="signupOtpGroup" style="display:none;">
-        <input type="text" id="signupOtp" maxlength="6" data-i18n-placeholder="enter_otp" placeholder="Enter OTP" />
+        <p class="signup">
+          <span data-i18n="already_account">Already have an account?</span>
+          <a href="index.html" data-i18n="login">Login</a>
+        </p>
       </div>
-
-      <button class="btn-submit" id="signupBtn" data-i18n="send_otp">SEND OTP</button>
-      <button class="btn-submit" id="verifySignupBtn" data-i18n="verify_otp" style="display:none;">VERIFY OTP</button>
-
-      <p class="signup"><span data-i18n="already_account">Already have an account?</span> <a href="index.html" data-i18n="login">Login</a></p>
-
-    </div>
-
-  </main>
-
-</body>
+    </main>
+  </body>
 </html>
