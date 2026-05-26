@@ -24,26 +24,55 @@ function toList(items) {
 function buildResultHtml(aiResult) {
   const solutions = aiResult.solutions || [];
   const plan = aiResult.fertilizer_plan || {};
+  const isHindi = String(aiResult.response_language || "").toLowerCase() === "hindi";
+
+  const labels = isHindi
+    ? {
+        title: "विश्लेषण पूरा हुआ",
+        copy: "योजना कॉपी करें",
+        summary: "सारांश",
+        usefulness: "उपयोगिता",
+        feasibility: "व्यवहार्यता",
+        topSolutions: "मुख्य पर्यावरण-अनुकूल समाधान",
+        recommended: "अनुशंसित उर्वरक",
+        eco: "इको-फ्रेंडली विकल्प",
+        stock: "उपलब्ध स्टॉक मिलान",
+        noSummary: "कोई सारांश उपलब्ध नहीं",
+        noStock: "कोई मिलान स्टॉक नहीं मिला",
+      }
+    : {
+        title: "Analysis Complete",
+        copy: "Copy Plan",
+        summary: "Summary",
+        usefulness: "Usefulness",
+        feasibility: "Feasibility",
+        topSolutions: "Top Eco-Friendly Solutions",
+        recommended: "Recommended Fertilizers",
+        eco: "Eco-Friendly Alternatives",
+        stock: "Stock Availability Match",
+        noSummary: "No summary available",
+        noStock: "No matching stock found",
+      };
 
   return `
     <div class="result-header">
-      <h3 class="results-title">Analysis Complete</h3>
-      <button id="copyPlanBtn" class="secondary-btn" type="button">Copy Plan</button>
+      <h3 class="results-title">${labels.title}</h3>
+      <button id="copyPlanBtn" class="secondary-btn" type="button">${labels.copy}</button>
     </div>
-    <p><strong>Summary:</strong> ${aiResult.feedback_analysis || "No summary available"}</p>
-    <p><strong>Usefulness:</strong> ${aiResult.usefulness_score || "N/A"} / 5 | <strong>Feasibility:</strong> ${aiResult.feasibility_score || "N/A"} / 5</p>
+    <p><strong>${labels.summary}:</strong> ${aiResult.feedback_analysis || labels.noSummary}</p>
+    <p><strong>${labels.usefulness}:</strong> ${aiResult.usefulness_score || "N/A"} / 5 | <strong>${labels.feasibility}:</strong> ${aiResult.feasibility_score || "N/A"} / 5</p>
 
-    <h4>Top Eco-Friendly Solutions</h4>
+    <h4>${labels.topSolutions}</h4>
     <ul>${toList(solutions)}</ul>
 
-    <h4>Recommended Fertilizers</h4>
+    <h4>${labels.recommended}</h4>
     <ul>${toList(plan.recommended_fertilizers)}</ul>
 
-    <h4>Eco-Friendly Alternatives</h4>
+    <h4>${labels.eco}</h4>
     <ul>${toList(plan.eco_friendly_options)}</ul>
 
-    <h4>Stock Availability Match</h4>
-    <p>${(plan.available_stock_match || []).join(", ") || "No matching stock found"}</p>
+    <h4>${labels.stock}</h4>
+    <p>${(plan.available_stock_match || []).join(", ") || labels.noStock}</p>
   `;
 }
 
@@ -187,7 +216,11 @@ document.getElementById("micBtn").addEventListener("click", () => {
 });
 
 document.getElementById("feedback").addEventListener("input", () => {
-  if (document.getElementById("feedback").value.trim()) {
+  const feedbackValue = document.getElementById("feedback").value.trim();
+  if (feedbackValue) {
+    const hasHindi = /[\u0900-\u097F]/.test(feedbackValue);
+    const responseLanguage = document.getElementById("responseLanguage");
+    if (responseLanguage) responseLanguage.value = hasHindi ? "Hindi" : "English";
     setVoiceStatus("Feedback captured. You can submit now.");
   }
 });

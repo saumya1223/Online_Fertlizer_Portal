@@ -37,10 +37,31 @@ function extractJsonBlock(text) {
   return null;
 }
 
+function detectResponseLanguageFromText(text) {
+  const value = String(text || "").trim();
+  if (!value) return null;
+
+  const devanagariMatches = value.match(/[\u0900-\u097F]/g) || [];
+  const latinMatches = value.match(/[A-Za-z]/g) || [];
+  const devanagariCount = devanagariMatches.length;
+  const latinCount = latinMatches.length;
+
+  if (devanagariCount === 0 && latinCount === 0) return null;
+  return devanagariCount > latinCount ? "Hindi" : "English";
+}
+
+function resolveResponseLanguage(payload) {
+  const inputDetected = detectResponseLanguageFromText(payload.feedback);
+  if (inputDetected) return inputDetected;
+  const requested = String(payload.responseLanguage || "").trim();
+  if (requested) return requested;
+  return "English";
+}
+
 function fallbackPlan(payload) {
   const crop = payload.cropType || "your crop";
   const soil = payload.soilType || "your soil";
-  const responseLanguage = payload.responseLanguage || "English";
+  const responseLanguage = resolveResponseLanguage(payload);
   const isHindi = String(responseLanguage).toLowerCase() === "hindi";
 
   return {
@@ -127,11 +148,11 @@ async function generateFertilizerPlan(payload) {
 
   const cfg = getProviderConfig();
   if (!cfg.apiKey) return fallbackPlan(payload);
-  const responseLanguage = payload.responseLanguage || "English";
+  const responseLanguage = resolveResponseLanguage(payload);
   const outputInstruction =
     String(responseLanguage).toLowerCase() === "hindi"
-      ? "Write all JSON string values in simple Hindi (Devanagari script)."
-      : "Write all JSON string values in clear English.";
+      ? "Write every JSON string value in natural Hindi only (Devanagari). Do not use English words or transliteration."
+      : "Write every JSON string value in clear English only. Do not include Hindi words.";
 
   const prompt = `
 You are an agriculture AI advisor.
@@ -156,6 +177,13 @@ Farmer input:
 - Farm Location: ${payload.farmLocation}
 
 Keep recommendations practical for Indian farming conditions and small/medium farms.
+Make the response richer and actionable:
+- feedback_analysis: 3-4 practical sentences with crop-stage awareness.
+- solutions: 5 concise items with field actions.
+- fertilizer_plan.recommended_fertilizers: 5 items with timing/split guidance.
+- fertilizer_plan.eco_friendly_options: 4 items.
+- fertilizer_plan.available_stock_match: 4 realistic market-available matches or substitutions.
+Avoid generic wording. Mention nutrient balance, split application, moisture/irrigation timing, and overdose cautions.
 ${outputInstruction}
 `;
 
